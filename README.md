@@ -14,7 +14,7 @@ TODO
 
 ## IP Queries and settings
 
-### `GET /ip?v=[PROTOCOL]`
+### `GET /v1/links/ips?v=[PROTOCOL]`
 
 List all IP addresses of all devices/interfaces.
 
@@ -28,132 +28,152 @@ Returned JSON schema:
 {
   devices: {
     [DEVICE_ID]: string[]
-  }
+  } = Object with every device ID with its corresponding IP list.
 }
 ```
 
 
-### `GET /ip/[DEVICE_ID]`
+### `GET /v1/links/[DEVICE_ID]/ip`
 
 Read IP address of a specific device.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
+- DEVICE_ID: string = Device string identifier.
 
-Returned schema:
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: string[]
+  [DEVICE_ID]: string[] = List of IP addresses.
 }
 ```
 
-### `POST /ip/[DEVICE_ID]/[ADDRESS]?append`
+### `POST /v1/links/[DEVICE_ID]/ip`
 
 Assign an IP address and mask to a device/interface.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
-- ADDRESS: string = IP address with a mask
+- DEVICE_ID: string = Device string identifier.
 
-Optional parameters:
-
-- append: boolean = Instead of assigning, append the address and keep any existing addresses.
-
-Returned schema (representing success or failure of the operation):
-
+Body JSON schema:
 ```
 {
-  [DEVICE_ID]: boolean
+  address: string = IP address with a mask.
+  append: boolean = Instead of assigning, append the address and keep any existing addresses.
 }
 ```
 
-### `DEL /ip/[DEVICE_ID]/[ADDRESS]`
+Returned JSON schema:
+
+```
+{
+  [DEVICE_ID]: boolean = Operation success/failure.
+}
+```
+
+### `DEL /v1/links/[DEVICE_ID]/ip`
 
 Remove an IP address from a device.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
-- ADDRESS: string = IP address with a mask
+- DEVICE_ID: string = Device string identifier.
 
-Returned schema (representing success or failure of the operation):
+Body JSON schema:
+```
+{
+  address: string = IP address with a mask.
+}
+```
+
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: boolean
+  [DEVICE_ID]: boolean = Operation success/failure.
 }
 ```
 
 ## Device status queries and settings
 
-### `GET /status/[DEVICE_ID]`
+### `GET /v1/links/[DEVICE_ID]/status`
 
 Check the status (up/down) of a device.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
+- DEVICE_ID: string = Device string identifier.
 
-Returned schema:
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: "up" | "down"
+  [DEVICE_ID]: "up" | "down" = Status to be set.
 }
 ```
 
-### `POST /status/[DEVICE_ID]/[STATUS]`
+### `POST /v1/links/[DEVICE_ID]/status`
 
 Set the status (up/down) of a device.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
-- STATUS: "up" | "down" = status to be set
+- DEVICE_ID: string = Device string identifier.
 
-Returned schema (representing success or failure of the operation)
+Body JSON schema:
+```
+{
+  status: "up" | "down" = IP address with a mask.
+}
+```
+
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: boolean
+  [DEVICE_ID]: boolean = Operation success/failure.
 }
 ```
 
 ## Device Maximum Transmission Unit (MTU)
 
-### `GET /mtu/[DEVICE_ID]`
+### `GET /v1/links/[DEVICE_ID]/mtu`
 
 Read the MTU size of a device in bytes.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
+- DEVICE_ID: string = Device string identifier.
 
-Returned schema:
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: number
+  [DEVICE_ID]: number = MTU size in bytes.
 }
 ```
 
-### `POST /mtu/[DEVICE_ID]/[MTU_BYTES]`
+### `POST /v1/links/[DEVICE_ID]/mtu`
 
 Set the MTU size of a device in bytes.
 
 Required parameters:
 
-- DEVICE_ID: string = device string identifier
-- MTU_BYTES: number = MTU size to be set
+- DEVICE_ID: string = Device string identifier.
 
+Body JSON schema:
+```
+{
+  mtu: number = MTU size in bytes.
+}
+```
 
-Returned schema (representing success or failure of the operation)
+Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: boolean
+  [DEVICE_ID]: boolean = Operation success/failure.
 }
 ```
