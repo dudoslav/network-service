@@ -1,0 +1,56 @@
+GET http://localhost:8080 HTTP/1.1
+
+###
+
+GET http://localhost:8080/v1/links/ips HTTP/1.1
+
+###
+
+GET http://localhost:8080/v1/links/eth0/ip HTTP/1.1
+
+###
+
+POST http://localhost:8080/v1/links/eth0/ip HTTP/1.1
+content-type: application/json
+
+{
+  "address": "192.1.2.3/24",
+  "append": false
+}
+
+###
+
+DELETE http://localhost:8080/v1/links/eth0/ip HTTP/1.1
+content-type: application/json
+
+{
+  "address": "192.1.2.3/24"
+}
+
+
+###
+
+GET http://localhost:8080/v1/links/eth0/status HTTP/1.1
+
+
+###
+
+POST http://localhost:8080/v1/links/eth0/status HTTP/1.1
+content-type: application/json
+
+{
+  "status": "up"
+}
+
+###
+
+GET http://localhost:8080/v1/links/eth0/mtu HTTP/1.1
+
+###
+
+POST http://localhost:8080/v1/links/eth0/mtu HTTP/1.1
+content-type: application/json
+
+{
+  "mtu": 123
+}
