@@ -12,30 +12,43 @@ TODO
 
 # API route specification:
 
-## IP Queries and settings
+## Query routes
 
-### `GET /v1/links/ips?v=[PROTOCOL]`
+### `GET /v1/links`
 
-List all IP addresses of all devices/interfaces.
-
-Optional parameters:
-
-- PROTOCOL: `4` | `6` = Pick IPv4 or IPv6 addresses. Omit to receive both.
+List all link identifiers.
 
 Returned JSON schema:
 
 ```
 {
-  devices: {
-    [DEVICE_ID]: string[]
-  } = Object with every device ID with its corresponding IP list.
+  links: string[] = List of string identifiers.
 }
 ```
 
+### `GET /v1/links/[DEVICE_ID]`
 
-### `GET /v1/links/[DEVICE_ID]/ip`
+Read every property of a specific device.
 
-Read IP address of a specific device.
+Required parameters:
+
+- DEVICE_ID: string = Device string identifier.
+
+Returned JSON schema:
+
+```
+{
+  [DEVICE_ID]: {
+    ips: string[] = List of IP addresses.
+    status: "up" | "down" = Status of the device (running/stopped).
+    mtu: number = Size of MTU (Maximum Transmission Unit) in bytes.
+  }
+}
+```
+
+### `GET /v1/links/[DEVICE_ID]/ips`
+
+Read all IP addresses of a specific link.
 
 Required parameters:
 
@@ -49,55 +62,6 @@ Returned JSON schema:
 }
 ```
 
-### `POST /v1/links/[DEVICE_ID]/ip`
-
-Assign an IP address and mask to a device/interface.
-
-Required parameters:
-
-- DEVICE_ID: string = Device string identifier.
-
-Body JSON schema:
-```
-{
-  address: string = IP address with a mask.
-  append: boolean = Instead of assigning, append the address and keep any existing addresses.
-}
-```
-
-Returned JSON schema:
-
-```
-{
-  [DEVICE_ID]: boolean = Operation success/failure.
-}
-```
-
-### `DEL /v1/links/[DEVICE_ID]/ip`
-
-Remove an IP address from a device.
-
-Required parameters:
-
-- DEVICE_ID: string = Device string identifier.
-
-Body JSON schema:
-```
-{
-  address: string = IP address with a mask.
-}
-```
-
-Returned JSON schema:
-
-```
-{
-  [DEVICE_ID]: boolean = Operation success/failure.
-}
-```
-
-## Device status queries and settings
-
 ### `GET /v1/links/[DEVICE_ID]/status`
 
 Check the status (up/down) of a device.
@@ -110,34 +74,9 @@ Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: "up" | "down" = Status to be set.
+  [DEVICE_ID]: "up" | "down" = Status of device.
 }
 ```
-
-### `POST /v1/links/[DEVICE_ID]/status`
-
-Set the status (up/down) of a device.
-
-Required parameters:
-
-- DEVICE_ID: string = Device string identifier.
-
-Body JSON schema:
-```
-{
-  status: "up" | "down" = IP address with a mask.
-}
-```
-
-Returned JSON schema:
-
-```
-{
-  [DEVICE_ID]: boolean = Operation success/failure.
-}
-```
-
-## Device Maximum Transmission Unit (MTU)
 
 ### `GET /v1/links/[DEVICE_ID]/mtu`
 
@@ -151,13 +90,40 @@ Returned JSON schema:
 
 ```
 {
-  [DEVICE_ID]: number = MTU size in bytes.
+  [DEVICE_ID]: number = Size of MTU (Maximum Transmission Unit) in bytes.
 }
 ```
 
-### `POST /v1/links/[DEVICE_ID]/mtu`
+## Modifications routes
 
-Set the MTU size of a device in bytes.
+### `PATCH /v1/links/[DEVICE_ID]`
+
+Change settings of a specific device.
+
+Required parameters:
+
+- DEVICE_ID: string = Device string identifier.
+
+Optional body JSON schema (include only desired attributes):
+```
+{
+  ip: string = Exclusive IP address with a mask to bet set.
+  status: "up" | "down" = Status of the device (running/stopped) to be set.
+  mtu: number = Size of MTU (Maximum Transmission Unit) in bytes to be set.
+}
+```
+
+Returned JSON schema:
+
+```
+{
+  [DEVICE_ID]: boolean = Operation success/failure.
+}
+```
+
+### `POST /v1/links/[DEVICE_ID]/ips`
+
+Add an IP address and mask to a device.
 
 Required parameters:
 
@@ -166,7 +132,30 @@ Required parameters:
 Body JSON schema:
 ```
 {
-  mtu: number = MTU size in bytes.
+  address: string = IP address with a mask.
+}
+```
+
+Returned JSON schema:
+
+```
+{
+  [DEVICE_ID]: boolean = Operation success/failure.
+}
+```
+
+### `DEL /v1/links/[DEVICE_ID]/ips`
+
+Remove an IP address and mask from a device.
+
+Required parameters:
+
+- DEVICE_ID: string = Device string identifier.
+
+Body JSON schema:
+```
+{
+  ip: string = IP address with a mask to be removed.
 }
 ```
 
