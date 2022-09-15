@@ -5,11 +5,6 @@ from pydantic import BaseModel
 app = FastAPI()
 
 
-@app.get("/")
-async def root():
-    return "Hello from network config service"
-
-
 @app.get("/v1/links/ips")
 async def list_all_ips(v: Union[Literal["4"], Literal["6"], None] = None):
     print(v)
