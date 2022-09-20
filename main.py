@@ -3,74 +3,77 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from pyroute2 import NDB
 
+###
+
+
+def get_device_property(device_id: str, prop: str):
+    with NDB() as ndb:
+        if device_id not in ndb.interfaces:
+            return None
+        with ndb.interfaces[device_id] as interface:
+            return interface[prop]
+
+
+def get_device_ips(device_id: str):
+    return get_device_property(device_id, "address")
+
+
+def get_device_status(device_id: str):
+    return get_device_property(device_id, "state")
+
+
+def get_device_mtu(device_id: str):
+    return get_device_property(device_id, "mtu")
+
+
+###
+
 app = FastAPI()
+
+# Query routes
 
 
 @app.get("/v1/links")
-async def list_all_ids():
+async def list_all_ids_route():
     with NDB() as ndb:
-        print(ndb.interfaces.summary())
-        return [interface[3] for interface in ndb.interfaces.summary()]
+        return [interface.ifname for interface in ndb.interfaces.summary()]
 
 
-# @app.get("/v1/links/{device_id}/ip")
-# async def list_device_ips(device_id: str):
-#     print(device_id)
-#     return ["ip1", "ip2"]
+@app.get("/v1/links/{device_id}")
+async def get_device_settings_route(device_id: str):
+    return {
+        device_id: {
+            "ips": get_device_ips(device_id),
+            "status": get_device_status(device_id),
+            "mtu": get_device_mtu(device_id),
+        }
+    }
 
 
-# class PostIPBody(BaseModel):
-#     address: str
-#     append: Union[bool, None]
+@app.get("/v1/links/{device_id}/ips")
+async def get_device_ips_route(device_id: str):
+    return {device_id: get_device_ips(device_id)}
 
 
-# @app.post("/v1/links/{device_id}/ip")
-# async def set_device_ip(body: PostIPBody, device_id: str):
-#     print(body)
-#     print(device_id)
-#     return {device_id: True}
+@app.get("/v1/links/{device_id}/status")
+async def get_device_status_route(device_id: str):
+    return {device_id: get_device_status(device_id)}
 
 
-# class DelIPBody(BaseModel):
-#     address: str
+@app.get("/v1/links/{device_id}/mtu")
+async def get_device_mtu_route(device_id: str):
+    return {device_id: get_device_mtu(device_id)}
 
 
-# @app.delete("/v1/links/{device_id}/ip")
-# async def del_device_ip(body: DelIPBody, device_id: str):
-#     print(body)
-#     print(device_id)
-#     return {device_id: True}
+# Modification routes
 
 
-# @app.get("/v1/links/{device_id}/status")
-# async def get_device_status(device_id: str):
-#     print(device_id)
-#     return {device_id: "up"}
-
-
-# class PostStatusBody(BaseModel):
-#     status: Union[Literal["up"], Literal["down"]]
-
-
-# @app.post("/v1/links/{device_id}/status")
-# async def set_device_status(body: PostStatusBody, device_id: str):
-#     print(body)
-#     print(device_id)
-#     return {device_id: True}
-
-
-# @app.get("/v1/links/{device_id}/mtu")
-# async def get_device_mtu(device_id: str):
-#     print(device_id)
-#     return {device_id: 123}
-
-
-# class PostMTUBody(BaseModel):
+# class PatchDeviceInfoBody(BaseModel):
+#     ip: Union[str, None]
+#     status: Union[Literal["up"], Literal["down"], None]
 #     mtu: int
 
 
-# @app.post("/v1/links/{device_id}/mtu")
-# async def set_device_mtu(body: PostMTUBody, device_id: str):
-#     print(body)
-#     print(device_id)
-#     return {device_id: True}
+# @app.patch("/v1/links/{device_id}")
+# async def patch_device_info_route(body: PatchDeviceInfoBody, device_id: str):
+#     return
