@@ -1,1 +1,1 @@
-docker run --rm -it --network host network-service-image
+docker run --rm -it --network host --privileged network-service-image
